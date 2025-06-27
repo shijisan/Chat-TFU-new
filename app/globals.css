@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --primary: #8b5cf6;
+  --secondary: #171717;
+  --font-sora: "Sora";
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --font-sora: var(--font-sora);
+  --breakpoint-md: 768.5px;
+}
+
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer components{
+  .btn{
+    @apply text-background px-4 py-2 hover:brightness-90 active:opacity-90 hover:cursor-pointer transition-all h-fit rounded-sm text-sm;
+  }
+}
