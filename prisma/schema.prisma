@@ -8,14 +8,69 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String          @unique
+  emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  encryption    UserEncryption?
+
+  sentRequests     ContactRequest[] @relation("SentRequests")
+  receivedRequests ContactRequest[] @relation("ReceivedRequests")
+
+  userContacts Contact[] @relation("UserContacts")
+  contactOf    Contact[] @relation("ContactOf")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserEncryption {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  iv                  String
+  salt                String
+  publicKey           String
+  encryptedPrivateKey String
+  encryptedKey        String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactRequest {
+  id         String        @id @default(cuid())
+  sender     User          @relation("SentRequests", fields: [senderId], references: [id])
+  senderId   String
+  receiver   User          @relation("ReceivedRequests", fields: [receiverId], references: [id])
+  receiverId String
+  status     RequestStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model Contact {
+  id String @id @default(cuid())
+
+  user   User   @relation("UserContacts", fields: [userId], references: [id], map: "Contact_user_fk")
+  userId String
+
+  contact   User   @relation("ContactOf", fields: [contactId], references: [id], map: "Contact_contact_fk")
+  contactId String
+
+  conversationId String @unique
+
+  createdAt DateTime @default(now())
 }
 
 model Account {
